@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Página Web</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.8/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="style1.css">
+ 
+</head>
+<body>
+
+<header>
+  <div class="header-background"></div>
+  <div class="header-content">
+    <h1>Capitan Anselmo Bellozo "Tecnica"</h1>
+    <div class="dropdown">
+      <button class="dropbtn">Redes Sociales</button>
+      <div class="dropdown-content">
+        <a href="#">Facebook</a>
+        <a href="#">Twitter</a>
+        <a href="#">Instagram</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="/prototipo 3/prototipo 3/index.html"<h3>Secciones 1 año</h3></li>
+ 
+  </ul>
+</nav>
+
+<main>
+  <h2>Notas de los Estudiantes</h2>
+  <br>
+  <table id="excel-table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Nota</th>
+      </tr>
+    </thead>
+    <tbody> </tbody>
+  </table>
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    handleFile('notas.xlsx');
+ 
+  });
+
+  function handleFile(fileName) {
+    const reader = new FileReader();
+    const fileURL = fileName;
+
+    reader.onload = function(e) {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const range = XLSX.utils.decode_range(sheet['!ref']);
+
+      const tableBody = document.getElementById('excel-table').getElementsByTagName('tbody')[0];
+
+    
+      tableBody.innerHTML = '';
+
+     
+      for (let R = range.s.r; R <= 30; ++R) {
+        const newRow = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const scoreCell = document.createElement('td');
+
+        const name = sheet[XLSX.utils.encode_cell({r: R, c: 0})];
+        const score = sheet[XLSX.utils.encode_cell({r: R, c: 1})]; 
+        nameCell.textContent = name ? name.v : '';
+        scoreCell.textContent = score ? score.v : ''; 
+
+        newRow.appendChild(nameCell);
+        newRow.appendChild(scoreCell);
+        tableBody.appendChild(newRow);
+      }
+    };
+
+    fetch(fileURL)
+      .then(response => response.arrayBuffer())
+      .then(buffer => {
+        const data = new Uint8Array(buffer);
+        reader.readAsArrayBuffer(new Blob([data]));
+      });
+  }
+</script>
+
+</body>
+</html>
